@@ -4,14 +4,39 @@ import './App.css';
 import MainPage from 'components/MainPage/MainPage';
 import About from 'components/About/About';
 import Page404 from 'components/Page404/Page404';
+import Header from 'components/Header/Header';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<MainPage />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/404" element={<Page404 />} />
+        <Route
+          path="/"
+          element={
+            <>
+              <Header currentPage="Main Page" />
+              <MainPage />
+            </>
+          }
+        />
+        <Route
+          path="/about"
+          element={
+            <>
+              <Header currentPage="About Page" />
+              <About />
+            </>
+          }
+        />
+        <Route
+          path="/404"
+          element={
+            <>
+              <Header currentPage="404 Page" />
+              <Page404 />
+            </>
+          }
+        />
         <Route path="*" element={<Navigate to="/404" replace />} />
       </Routes>
     </BrowserRouter>
