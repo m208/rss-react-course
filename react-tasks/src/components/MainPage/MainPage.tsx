@@ -1,5 +1,6 @@
 import Card from 'components/Card/Card';
-import SearchBar from 'components/SearchBar/SearchBar';
+import { SearchBar } from 'components/SearchBar/SearchBar';
+
 import React from 'react';
 import './MainPage.css';
 
