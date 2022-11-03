@@ -11,8 +11,19 @@ export class SearchBar extends React.Component<Record<string, unknown>, { lastVa
     this.lv = this.state.lastValue;
   }
 
-  componentDidMount() {}
-  componentWillUnmount() {}
+  bindedSaveLastValue = this.saveLastValue.bind(this);
+
+  saveLastValue() {
+    localStorage.setItem('searchBarSavedValue', this.lv);
+  }
+
+  componentDidMount() {
+    window.addEventListener('beforeunload', this.bindedSaveLastValue);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('beforeunload', this.bindedSaveLastValue);
+  }
 
   render() {
     return (
@@ -24,7 +35,6 @@ export class SearchBar extends React.Component<Record<string, unknown>, { lastVa
           defaultValue={this.state.lastValue}
           onChange={(e: React.FormEvent<HTMLInputElement>) => {
             this.lv = e.currentTarget.value;
-            localStorage.setItem('searchBarSavedValue', e.currentTarget.value);
           }}
         />
       </div>
