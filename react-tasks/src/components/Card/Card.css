@@ -16,6 +16,7 @@
 
 .card-description {
   padding: 0 1em;
+  white-space: pre-line;
 }
 
 .card-date {
