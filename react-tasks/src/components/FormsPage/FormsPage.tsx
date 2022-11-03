@@ -1,6 +1,7 @@
 import Card from 'components/Card/Card';
 import React, { FormEvent, RefObject } from 'react';
 import './FormsPage.css';
+import { NotificationPopUp } from './NotificationPopUp/NotificationPopUp';
 
 interface FormData {
   name: string;
@@ -16,6 +17,7 @@ interface FormData {
 interface FormState {
   cards: Array<FormData>;
   submitActive: boolean;
+  popupActive: boolean;
 }
 
 export class FormsPage extends React.Component<Record<string, unknown>, FormState> {
@@ -31,7 +33,7 @@ export class FormsPage extends React.Component<Record<string, unknown>, FormStat
 
   constructor(props: Record<string, string>) {
     super(props);
-    this.state = { cards: [], submitActive: false };
+    this.state = { cards: [], submitActive: false, popupActive: false };
     this.handleSubmit = this.handleSubmit.bind(this);
 
     this.name = React.createRef();
@@ -64,7 +66,11 @@ export class FormsPage extends React.Component<Record<string, unknown>, FormStat
     cardsCopy.push(data);
     this.setState({ cards: cardsCopy });
 
+    this.setState({ popupActive: true });
+    setTimeout(() => this.setState({ popupActive: false }), 1500);
+
     this.form.current!.reset();
+    this.setState({ submitActive: false });
   }
 
   onValidationInputChange() {
@@ -183,6 +189,10 @@ export class FormsPage extends React.Component<Record<string, unknown>, FormStat
             </div>
           </form>
         </div>
+
+        {this.state.popupActive && (
+          <NotificationPopUp message="Success! Information has been saved!" />
+        )}
 
         <div className="cards-wrapper">
           {this.state.cards.map((el, i) => (
