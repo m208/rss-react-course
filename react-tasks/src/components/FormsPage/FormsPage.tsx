@@ -13,10 +13,12 @@ interface FormData {
   switcher: boolean;
 }
 
-export class FormsPage extends React.Component<
-  Record<string, unknown>,
-  { cards: Array<FormData> }
-> {
+interface FormState {
+  cards: Array<FormData>;
+  submitActive: boolean;
+}
+
+export class FormsPage extends React.Component<Record<string, unknown>, FormState> {
   name: RefObject<HTMLInputElement>;
   email: RefObject<HTMLInputElement>;
   country: RefObject<HTMLSelectElement>;
@@ -25,10 +27,11 @@ export class FormsPage extends React.Component<
   switcher: RefObject<HTMLInputElement>;
   file: RefObject<HTMLInputElement>;
   date: RefObject<HTMLInputElement>;
+  form: RefObject<HTMLFormElement>;
 
   constructor(props: Record<string, string>) {
     super(props);
-    this.state = { cards: [] };
+    this.state = { cards: [], submitActive: false };
     this.handleSubmit = this.handleSubmit.bind(this);
 
     this.name = React.createRef();
@@ -39,10 +42,12 @@ export class FormsPage extends React.Component<
     this.cb1 = React.createRef();
     this.cb2 = React.createRef();
     this.switcher = React.createRef();
+
+    this.form = React.createRef();
   }
 
   handleSubmit(event: FormEvent<HTMLFormElement>) {
-    console.log(this.cb1.current!.checked);
+    event.preventDefault();
 
     const data: FormData = {
       name: this.name.current!.value,
@@ -59,25 +64,52 @@ export class FormsPage extends React.Component<
     cardsCopy.push(data);
     this.setState({ cards: cardsCopy });
 
-    event.preventDefault();
+    this.form.current!.reset();
+  }
+
+  onValidationInputChange() {
+    this.setState({ submitActive: true });
+  }
+
+  onValidationFailed() {
+    this.setState({ submitActive: false });
   }
 
   render() {
     return (
       <>
         <div className="form-wrapper">
-          <form className="form-example" onSubmit={(e) => this.handleSubmit(e)}>
+          <form
+            className="form-example"
+            onSubmit={(e) => this.handleSubmit(e)}
+            onInvalid={() => this.onValidationFailed()}
+            ref={this.form}
+          >
             <div className="form-item">
               <label className="form-item-label">
                 Enter your name:
-                <input type="text" name="name" id="name" required ref={this.name} />
+                <input
+                  type="text"
+                  name="name"
+                  id="name"
+                  required
+                  ref={this.name}
+                  onChange={() => this.onValidationInputChange()}
+                />
               </label>
             </div>
 
             <div className="form-item">
               <label className="form-item-label">
                 Enter your email:
-                <input type="email" name="email" id="email" ref={this.email} />
+                <input
+                  type="email"
+                  name="email"
+                  id="email"
+                  required
+                  ref={this.email}
+                  onChange={() => this.onValidationInputChange()}
+                />
               </label>
             </div>
 
@@ -147,7 +179,7 @@ export class FormsPage extends React.Component<
             </div>
 
             <div className="form-item">
-              <input type="submit" value="Subscribe!" />
+              <input type="submit" value="Subscribe!" disabled={!this.state.submitActive} />
             </div>
           </form>
         </div>
