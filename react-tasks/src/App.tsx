@@ -5,6 +5,7 @@ import MainPage from 'components/MainPage/MainPage';
 import About from 'components/About/About';
 import Page404 from 'components/Page404/Page404';
 import Header from 'components/Header/Header';
+import FormsPage from 'components/FormsPage/FormsPage';
 
 function App() {
   return (
@@ -16,6 +17,15 @@ function App() {
             <>
               <Header currentPage="Main Page" />
               <MainPage />
+            </>
+          }
+        />
+        <Route
+          path="/forms"
+          element={
+            <>
+              <Header currentPage="Forms Page" />
+              <FormsPage />
             </>
           }
         />
