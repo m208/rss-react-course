@@ -2,17 +2,19 @@ import React from 'react';
 import './Card.css';
 
 interface CardContentProps {
-  imgSrc: string;
+  imgSrc: string | null;
   header: string;
   description: string;
   date: string;
 }
 
+const defaultImage = 'https://placeimg.com/320/320/any';
+
 export default function Card({ imgSrc, header, description, date }: CardContentProps) {
   return (
     <div className="card-wrapper">
       <div className="card-image">
-        <img src={imgSrc} alt="Picture" />
+        <img src={imgSrc || defaultImage} alt="Picture" />
       </div>
       <div className="card-heading">
         <h2 className="card-heading-content">{header}</h2>

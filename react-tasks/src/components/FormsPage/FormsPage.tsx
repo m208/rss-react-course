@@ -1,5 +1,5 @@
 import Card from 'components/Card/Card';
-import React, { FormEvent, RefObject } from 'react';
+import React, { ChangeEvent, FormEvent, RefObject } from 'react';
 import './FormsPage.css';
 import { NotificationPopUp } from './NotificationPopUp/NotificationPopUp';
 
@@ -9,6 +9,7 @@ interface FormData {
   country: string;
   date: string;
   file: string;
+  fileData: string | null;
   cb1: boolean;
   cb2: boolean;
   switcher: boolean;
@@ -30,6 +31,8 @@ export class FormsPage extends React.Component<Record<string, unknown>, FormStat
   file: RefObject<HTMLInputElement>;
   date: RefObject<HTMLInputElement>;
   form: RefObject<HTMLFormElement>;
+  fileReader: FileReader;
+  fileData: string | null;
 
   constructor(props: Record<string, string>) {
     super(props);
@@ -46,6 +49,9 @@ export class FormsPage extends React.Component<Record<string, unknown>, FormStat
     this.switcher = React.createRef();
 
     this.form = React.createRef();
+
+    this.fileReader = new FileReader();
+    this.fileData = null;
   }
 
   handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -57,6 +63,7 @@ export class FormsPage extends React.Component<Record<string, unknown>, FormStat
       country: this.country.current!.value,
       date: this.date.current!.value,
       file: this.file.current!.value,
+      fileData: this.fileData,
       cb1: this.cb1.current!.checked,
       cb2: this.cb2.current!.checked,
       switcher: this.switcher.current!.checked,
@@ -69,8 +76,7 @@ export class FormsPage extends React.Component<Record<string, unknown>, FormStat
     this.setState({ popupActive: true });
     setTimeout(() => this.setState({ popupActive: false }), 1500);
 
-    this.form.current!.reset();
-    this.setState({ submitActive: false });
+    this.formReset();
   }
 
   onValidationInputChange() {
@@ -79,6 +85,27 @@ export class FormsPage extends React.Component<Record<string, unknown>, FormStat
 
   onValidationFailed() {
     this.setState({ submitActive: false });
+  }
+
+  formReset() {
+    this.form.current!.reset();
+    this.setState({ submitActive: false });
+    this.fileData = null;
+  }
+
+  onFileUpload(event: ChangeEvent<HTMLInputElement>) {
+    this.setState({ submitActive: true });
+
+    if (event.target) {
+      const files = (event.target as HTMLInputElement).files;
+      if (files && files.length) {
+        this.fileReader.onload = () => {
+          this.fileData = this.fileReader.result as string;
+          console.log(this.fileData);
+        };
+        this.fileReader.readAsDataURL(files[0]);
+      }
+    }
   }
 
   render() {
@@ -146,8 +173,13 @@ export class FormsPage extends React.Component<Record<string, unknown>, FormStat
 
             <div className="form-item">
               <label className="form-item-label">
-                Upload file
-                <input type="file" ref={this.file} />
+                Upload image
+                <input
+                  type="file"
+                  ref={this.file}
+                  onChange={(e) => this.onFileUpload(e)}
+                  accept="image/*"
+                />
               </label>
             </div>
 
@@ -197,7 +229,7 @@ export class FormsPage extends React.Component<Record<string, unknown>, FormStat
         <div className="cards-wrapper">
           {this.state.cards.map((el, i) => (
             <Card
-              imgSrc="https://placeimg.com/320/320/tech"
+              imgSrc={el.fileData}
               date={el.date}
               header={el.name}
               description={generateText(el)}
