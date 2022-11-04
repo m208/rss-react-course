@@ -1,4 +1,5 @@
-import React from 'react';
+import { photosSearch } from 'api/flickr';
+import React, { KeyboardEventHandler } from 'react';
 import './SearchBar.css';
 
 export class SearchBar extends React.Component<Record<string, unknown>, { lastValue: string }> {
@@ -25,6 +26,13 @@ export class SearchBar extends React.Component<Record<string, unknown>, { lastVa
     window.removeEventListener('beforeunload', this.bindedSaveLastValue);
   }
 
+  async handleKeyUp(event: React.KeyboardEvent) {
+    if (event.key === 'Enter') {
+      const search = await photosSearch(this.lv);
+      console.log(search.photos.photo);
+    }
+  }
+
   render() {
     return (
       <div className="search-bar-wrapper">
@@ -36,6 +44,7 @@ export class SearchBar extends React.Component<Record<string, unknown>, { lastVa
           onChange={(e: React.FormEvent<HTMLInputElement>) => {
             this.lv = e.currentTarget.value;
           }}
+          onKeyUp={(e: React.KeyboardEvent) => this.handleKeyUp(e)}
         />
       </div>
     );
