@@ -21,6 +21,17 @@
   object-fit: contain;
 }
 
+.card-mini-image {
+  width: 320px;
+  height: 320px;
+  display: flex;
+  justify-content: center;
+}
+
+.card-mini-image img {
+  object-fit: cover;
+}
+
 .card-heading {
   padding: 0 1em;
 }

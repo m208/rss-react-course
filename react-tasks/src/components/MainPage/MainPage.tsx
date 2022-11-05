@@ -37,6 +37,7 @@ export class MainPage extends React.Component<MainPageProps, MainPageState> {
           <div className="cards-wrapper">
             {this.state.searchResults.map((el) => (
               <Card
+                cardType="mini"
                 imgSrc={generateImageUrl(el, 'n')}
                 date={generatePostDate(el)}
                 header={el.title}
