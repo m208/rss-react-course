@@ -7,6 +7,7 @@ interface CardContentProps {
   description: string;
   date: string;
   cardType?: 'default' | 'mini';
+  onButtonClick?: () => void;
 }
 
 const defaultImage = 'https://placeimg.com/320/320/any';
@@ -17,6 +18,7 @@ export default function Card({
   description,
   date,
   cardType = 'default',
+  onButtonClick,
 }: CardContentProps) {
   return (
     <div className="card-wrapper">
@@ -37,7 +39,9 @@ export default function Card({
         </>
       )}
       <div className="card-button-wrapper">
-        <div className="card-button">More...</div>
+        <div className="card-button" onClick={onButtonClick}>
+          More...
+        </div>
       </div>
     </div>
   );
