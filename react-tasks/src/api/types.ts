@@ -15,4 +15,10 @@ export interface FlickrSearchItem {
   dateupload: string;
   owner: string;
   ownername: string;
+  title: string;
+  description: {
+    _content: string;
+  };
+  geo: string;
+  views: string;
 }

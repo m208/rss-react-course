@@ -1,15 +1,26 @@
-import { photosSearch } from 'api/flickr';
-import React, { KeyboardEventHandler } from 'react';
+import { getRandomSearchPhoto, photosSearch } from 'api/flickr';
+import { FlickrSearchItem, FlickrSearchResult } from 'api/types';
+import React from 'react';
 import './SearchBar.css';
 
-export class SearchBar extends React.Component<Record<string, unknown>, { lastValue: string }> {
-  lv: string;
+interface SearchBarProps {
+  searchCallBack: (searchResult: FlickrSearchItem) => void;
+}
 
-  constructor(props: { name: string }) {
+interface SearchBarState {
+  lastValue: string;
+}
+
+export class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
+  lv: string;
+  searchCallBack: (searchResult: FlickrSearchItem) => void;
+
+  constructor(props: SearchBarProps) {
     super(props);
 
     this.state = { lastValue: localStorage.getItem('searchBarSavedValue') || '' };
     this.lv = this.state.lastValue;
+    this.searchCallBack = props.searchCallBack;
   }
 
   bindedSaveLastValue = this.saveLastValue.bind(this);
@@ -28,8 +39,8 @@ export class SearchBar extends React.Component<Record<string, unknown>, { lastVa
 
   async handleKeyUp(event: React.KeyboardEvent) {
     if (event.key === 'Enter') {
-      const search = await photosSearch(this.lv);
-      console.log(search.photos.photo);
+      const search = await getRandomSearchPhoto(this.lv);
+      this.searchCallBack(search);
     }
   }
 
