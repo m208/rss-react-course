@@ -1,11 +1,12 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import App from './App';
 
-import fakeLocalStorage from './LSMock';
+import fakeLocalStorage from './mocks/LSMock';
 import Card from 'components/Card/Card';
 import { FormsPage } from 'components/FormsPage/FormsPage';
 import userEvent from '@testing-library/user-event';
+import { fetchMock } from 'mocks/fetchMock';
 
 Object.defineProperty(window, 'localStorage', {
   value: fakeLocalStorage,
@@ -76,5 +77,34 @@ describe('Forms', () => {
 
     userEvent.type(emailInput, 'test@test.test');
     expect(emailInput).toBeValid();
+  });
+});
+
+describe('Flickr service API', () => {
+  it('Draw card with fetched data', async () => {
+    global.fetch = jest.fn().mockImplementation(fetchMock);
+
+    render(<App />);
+
+    const searchInput = screen.getByPlaceholderText<HTMLInputElement>('Search...');
+    userEvent.type(searchInput, 'forest');
+    fireEvent.keyUp(searchInput, { key: 'Enter' });
+
+    await waitFor(() => expect(screen.getByText('Test title')).toBeInTheDocument());
+  });
+
+  it('Draw multiple cards with fetched data', async () => {
+    global.fetch = jest.fn().mockImplementation(fetchMock);
+
+    render(<App />);
+
+    const searchInput = screen.getByPlaceholderText<HTMLInputElement>('Search...');
+    userEvent.type(searchInput, 'forest');
+    fireEvent.keyUp(searchInput, { key: 'Enter' });
+    await waitFor(() => expect(screen.getByText('Test title')).toBeInTheDocument());
+
+    userEvent.type(searchInput, 'forest');
+    fireEvent.keyUp(searchInput, { key: 'Enter' });
+    await waitFor(() => expect(screen.queryAllByText('Test title')).toHaveLength(2));
   });
 });
