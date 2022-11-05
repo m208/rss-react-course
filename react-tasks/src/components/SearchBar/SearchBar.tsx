@@ -5,6 +5,7 @@ import './SearchBar.css';
 
 interface SearchBarProps {
   searchCallBack: (searchResult: FlickrSearchItem) => void;
+  ajaxAnimationCallback: (status: boolean) => void;
 }
 
 interface SearchBarState {
@@ -14,6 +15,7 @@ interface SearchBarState {
 export class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
   lv: string;
   searchCallBack: (searchResult: FlickrSearchItem) => void;
+  ajaxAnimationCallback: (status: boolean) => void;
 
   constructor(props: SearchBarProps) {
     super(props);
@@ -21,6 +23,7 @@ export class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
     this.state = { lastValue: localStorage.getItem('searchBarSavedValue') || '' };
     this.lv = this.state.lastValue;
     this.searchCallBack = props.searchCallBack;
+    this.ajaxAnimationCallback = props.ajaxAnimationCallback;
   }
 
   bindedSaveLastValue = this.saveLastValue.bind(this);
@@ -39,8 +42,10 @@ export class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
 
   async handleKeyUp(event: React.KeyboardEvent) {
     if (event.key === 'Enter') {
+      this.ajaxAnimationCallback(true);
       const search = await getRandomSearchPhoto(this.lv);
       this.searchCallBack(search);
+      this.ajaxAnimationCallback(false);
     }
   }
 

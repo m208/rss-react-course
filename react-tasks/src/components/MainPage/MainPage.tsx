@@ -1,6 +1,7 @@
 import { generateImageUrl, generatePostDate } from 'api/flickr';
 import { FlickrSearchItem, FlickrSearchResult } from 'api/types';
 import Card from 'components/Card/Card';
+import { Loader } from 'components/Loader/Loader';
 import { SearchBar } from 'components/SearchBar/SearchBar';
 
 import React from 'react';
@@ -12,13 +13,14 @@ interface MainPageProps {
 
 interface MainPageState {
   searchResults: Array<FlickrSearchItem>;
+  spinnerActive: boolean;
 }
 
 export class MainPage extends React.Component<MainPageProps, MainPageState> {
   constructor(props: MainPageProps) {
     super(props);
 
-    this.state = { searchResults: [] };
+    this.state = { searchResults: [], spinnerActive: false };
   }
 
   searchBarCallback = (searchResult: FlickrSearchItem) => {
@@ -28,11 +30,23 @@ export class MainPage extends React.Component<MainPageProps, MainPageState> {
     });
   };
 
+  ajaxAnimationCallback = (status: boolean) => {
+    console.log(status);
+    this.setState({
+      spinnerActive: status,
+    });
+  };
+
   render() {
     return (
       <>
         <div className="App">
-          <SearchBar searchCallBack={this.searchBarCallback} />
+          {this.state.spinnerActive && <Loader />}
+
+          <SearchBar
+            searchCallBack={this.searchBarCallback}
+            ajaxAnimationCallback={this.ajaxAnimationCallback}
+          />
 
           <div className="cards-wrapper">
             {this.state.searchResults.map((el) => (
