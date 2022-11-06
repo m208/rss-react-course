@@ -16,6 +16,16 @@
   width: 30em;
 }
 
+.form-input {
+  display: flex;
+  flex-direction: column;
+  line-height: 2em;
+}
+
+.form-error-field {
+  color: red;
+}
+
 /*  Switcher css code from https://www.sitepoint.com/react-toggle-switch-reusable-component */
 
 .toggle-switch {
