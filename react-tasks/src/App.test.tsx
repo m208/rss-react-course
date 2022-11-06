@@ -54,7 +54,7 @@ describe('Forms', () => {
     expect(submit).not.toHaveAttribute('disabled');
   });
 
-  it('Create Card on submit', () => {
+  it('Create Card on submit', async () => {
     render(<FormsPage />);
     const submit = screen.getByText('Subscribe!');
     const nameInput = screen.getByLabelText('Enter your name:');
@@ -64,19 +64,35 @@ describe('Forms', () => {
     userEvent.type(emailInput, 'test@test.test');
     userEvent.click(submit);
 
-    expect(screen.getByText(/tester name/)).toBeInTheDocument();
-    expect(screen.getByText(/email: test@test.test/)).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText(/tester name/)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/email: test@test.test/)).toBeInTheDocument());
   });
 
-  it('HTML5 Validation check', () => {
+  it('Validation check for required field', async () => {
     render(<FormsPage />);
+    const nameInput = screen.getByLabelText('Enter your name:');
+    const submit = screen.getByText('Subscribe!');
+    userEvent.type(nameInput, 'tester name');
+
+    userEvent.click(submit);
+
+    await waitFor(() =>
+      expect(screen.queryByText(/Email Address is required/)).toBeInTheDocument()
+    );
+  });
+
+  it('Validation check for correct email field', async () => {
+    render(<FormsPage />);
+    const nameInput = screen.getByLabelText('Enter your name:');
     const emailInput = screen.getByLabelText('Enter your email:');
+    const submit = screen.getByText('Subscribe!');
 
-    userEvent.type(emailInput, 'invalid email');
-    expect(emailInput).toBeInvalid();
+    userEvent.type(nameInput, 'tester name');
+    userEvent.type(emailInput, '123');
 
-    userEvent.type(emailInput, 'test@test.test');
-    expect(emailInput).toBeValid();
+    userEvent.click(submit);
+
+    await waitFor(() => expect(screen.queryByText(/invalid email/)).toBeInTheDocument());
   });
 });
 
