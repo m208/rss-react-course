@@ -1,6 +1,6 @@
-import { getRandomSearchPhoto, photosSearch } from 'api/flickr';
-import { FlickrSearchItem, FlickrSearchResult } from 'api/types';
-import React from 'react';
+import { getRandomSearchPhoto } from 'api/flickr';
+import { FlickrSearchItem } from 'api/types';
+import React, { useEffect, useRef, useState } from 'react';
 import './SearchBar.css';
 
 interface SearchBarProps {
@@ -8,61 +8,46 @@ interface SearchBarProps {
   ajaxAnimationCallback: (status: boolean) => void;
 }
 
-interface SearchBarState {
-  lastValue: string;
-}
+export function SearchBar({ searchCallBack, ajaxAnimationCallback }: SearchBarProps) {
+  const searchInput = useRef<HTMLInputElement>(null);
+  const [localValue, setLocalValue] = useState('');
 
-export class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
-  lv: string;
-  searchCallBack: (searchResult: FlickrSearchItem) => void;
-  ajaxAnimationCallback: (status: boolean) => void;
+  const saveLastValue = () => {
+    localStorage.setItem('searchBarSavedValue', searchInput.current!.value);
+  };
 
-  constructor(props: SearchBarProps) {
-    super(props);
+  useEffect(() => {
+    setLocalValue(localStorage.getItem('searchBarSavedValue') || '');
+    window.addEventListener('beforeunload', saveLastValue);
 
-    this.state = { lastValue: localStorage.getItem('searchBarSavedValue') || '' };
-    this.lv = this.state.lastValue;
-    this.searchCallBack = props.searchCallBack;
-    this.ajaxAnimationCallback = props.ajaxAnimationCallback;
-  }
+    return () => {
+      window.removeEventListener('beforeunload', saveLastValue);
+    };
+  }, []);
 
-  bindedSaveLastValue = this.saveLastValue.bind(this);
-
-  saveLastValue() {
-    localStorage.setItem('searchBarSavedValue', this.lv);
-  }
-
-  componentDidMount() {
-    window.addEventListener('beforeunload', this.bindedSaveLastValue);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('beforeunload', this.bindedSaveLastValue);
-  }
-
-  async handleKeyUp(event: React.KeyboardEvent) {
+  const handleKeyUp = async (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
-      this.ajaxAnimationCallback(true);
-      const search = await getRandomSearchPhoto(this.lv);
-      this.searchCallBack(search);
-      this.ajaxAnimationCallback(false);
-    }
-  }
+      ajaxAnimationCallback(true);
 
-  render() {
-    return (
-      <div className="search-bar-wrapper">
-        <input
-          type="search"
-          className="search-bar-input"
-          placeholder="Search..."
-          defaultValue={this.state.lastValue}
-          onChange={(e: React.FormEvent<HTMLInputElement>) => {
-            this.lv = e.currentTarget.value;
-          }}
-          onKeyUp={(e: React.KeyboardEvent) => this.handleKeyUp(e)}
-        />
-      </div>
-    );
-  }
+      if (searchInput.current) {
+        const search = await getRandomSearchPhoto(searchInput.current.value);
+        searchCallBack(search);
+      }
+
+      ajaxAnimationCallback(false);
+    }
+  };
+
+  return (
+    <div className="search-bar-wrapper">
+      <input
+        ref={searchInput}
+        type="search"
+        className="search-bar-input"
+        placeholder="Search..."
+        defaultValue={localValue}
+        onKeyUp={(e: React.KeyboardEvent) => handleKeyUp(e)}
+      />
+    </div>
+  );
 }
