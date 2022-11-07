@@ -6,15 +6,54 @@ import { Modal } from 'components/Modal/Modal';
 import { SearchBar } from 'components/SearchBar/SearchBar';
 import { SearchContext } from 'context/SearchContext';
 
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useReducer, useState } from 'react';
 import './MainPage.css';
+
+interface MainPageState {
+  spinnerActive: boolean;
+  modalActive: boolean;
+  searchResults: Array<FlickrSearchItem>;
+  modalContent: FlickrSearchItem | null;
+}
+
+const initialState: MainPageState = {
+  spinnerActive: false,
+  modalActive: false,
+  searchResults: [],
+  modalContent: null,
+};
+
+interface ReducerAction {
+  type: string;
+  payload: boolean;
+}
+
+const reducer = (state: MainPageState, action: ReducerAction) => {
+  const { type, payload } = action;
+  switch (type) {
+    case 'spinnerActive':
+      return {
+        ...state,
+        value: (state.spinnerActive = payload),
+      };
+    case 'modalActive':
+      return {
+        ...state,
+        value: (state.modalActive = payload),
+      };
+    default:
+      return state;
+  }
+};
 
 export function MainPage() {
   const { results, addResults } = useContext(SearchContext);
 
+  const [state, dispatch] = useReducer(reducer, initialState);
+  // const [spinnerActive, setSpinnerActive] = useState(false);
+  // const [modalActive, setModalActive] = useState(false);
+
   const [searchResults, setSearchResults] = useState<Array<FlickrSearchItem>>([]);
-  const [spinnerActive, setSpinnerActive] = useState(false);
-  const [modalActive, setModalActive] = useState(false);
   const [modalContent, setModalContent] = useState<FlickrSearchItem | null>(null);
 
   const searchBarCallback = (searchResult: Array<FlickrSearchItem>) => {
@@ -23,11 +62,13 @@ export function MainPage() {
   };
 
   const ajaxAnimationCallback = (status: boolean) => {
-    setSpinnerActive(status);
+    //setSpinnerActive(status);
+    dispatch({ type: 'spinnerActive', payload: status });
   };
 
   const modalShowCallback = (status: boolean) => {
-    setModalActive(status);
+    // setModalActive(status);
+    dispatch({ type: 'modalActive', payload: status });
   };
 
   const openModal = (index: number) => {
@@ -44,9 +85,9 @@ export function MainPage() {
   return (
     <>
       <div className="App">
-        {spinnerActive && <Loader />}
+        {state.spinnerActive && <Loader />}
 
-        {modalActive && <Modal content={modalContent} onCloseCallback={modalShowCallback} />}
+        {state.modalActive && <Modal content={modalContent} onCloseCallback={modalShowCallback} />}
 
         <SearchBar
           searchCallBack={searchBarCallback}
