@@ -4,18 +4,21 @@ import Card from 'components/Card/Card';
 import { Loader } from 'components/Loader/Loader';
 import { Modal } from 'components/Modal/Modal';
 import { SearchBar } from 'components/SearchBar/SearchBar';
+import { SearchContext } from 'context/SearchContext';
 
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import './MainPage.css';
 
 export function MainPage() {
+  const { results, addResults } = useContext(SearchContext);
+
   const [searchResults, setSearchResults] = useState<Array<FlickrSearchItem>>([]);
   const [spinnerActive, setSpinnerActive] = useState(false);
   const [modalActive, setModalActive] = useState(false);
   const [modalContent, setModalContent] = useState<FlickrSearchItem | null>(null);
 
-  const searchBarCallback = (searchResult: FlickrSearchItem) => {
-    setSearchResults((searchResults) => [...searchResults, searchResult]);
+  const searchBarCallback = (searchResult: Array<FlickrSearchItem>) => {
+    setSearchResults((searchResults) => [...searchResults, ...searchResult]);
   };
 
   const ajaxAnimationCallback = (status: boolean) => {

@@ -4,7 +4,7 @@ import { FlickrSearchItem, FlickrSearchResult } from './types';
 const api_key = '74b11dfcd1dd2e5e9beaa22503f10d47';
 const api_endpoint = 'https://api.flickr.com/services/rest/';
 
-export async function photosSearch(text: string) {
+export async function photosSearch(text: string, per_page = '5') {
   const extras = [
     'date_upload',
     'owner_name',
@@ -23,6 +23,7 @@ export async function photosSearch(text: string) {
     extras: extras.join(','),
     format: 'json',
     nojsoncallback: '1',
+    per_page,
   };
 
   const queryParams = new URLSearchParams(Object.entries(params));
