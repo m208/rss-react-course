@@ -1,10 +1,11 @@
 import Card from 'components/Card/Card';
-import React, { ChangeEvent, useRef, useState } from 'react';
+import { FormsContext } from 'context/FormsContext';
+import React, { ChangeEvent, useContext, useEffect, useRef, useState } from 'react';
 import { FieldValues, useForm } from 'react-hook-form';
 import './FormsPage.css';
 import { NotificationPopUp } from './NotificationPopUp/NotificationPopUp';
 
-interface FormData {
+export interface IFormData {
   name: string;
   email: string;
   country: string;
@@ -17,6 +18,8 @@ interface FormData {
 }
 
 export function FormsPage() {
+  const { forms, addForms } = useContext(FormsContext);
+
   const {
     register,
     handleSubmit,
@@ -26,13 +29,13 @@ export function FormsPage() {
 
   const [submitActive, setsubmitActive] = useState(false);
   const [popupActive, setpopupActive] = useState(false);
-  const [cards, setCards] = useState<Array<FormData>>([]);
+  const [cards, setCards] = useState<Array<IFormData>>([]);
 
   const imageData = useRef<string>('');
 
   const onSubmit = async (data: FieldValues) => {
     const { name, email, country, date, cb1, cb2, switcher } = data;
-    const card: FormData = {
+    const card: IFormData = {
       name,
       email,
       country,
@@ -42,6 +45,8 @@ export function FormsPage() {
       switcher,
       fileData: imageData.current,
     };
+
+    addForms([...forms, card]);
     setCards((cards) => [...cards, card]);
 
     drawPopUp();
@@ -73,6 +78,10 @@ export function FormsPage() {
   const onValidationInputChange = () => {
     setsubmitActive(true);
   };
+
+  useEffect(() => {
+    setCards(forms);
+  }, []);
 
   return (
     <>
@@ -211,7 +220,7 @@ export function FormsPage() {
   );
 }
 
-function generateText(item: FormData) {
+function generateText(item: IFormData) {
   return `
     email: ${item.email}\n
     country: ${item.country}\n
