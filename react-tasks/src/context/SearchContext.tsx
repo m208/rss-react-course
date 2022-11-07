@@ -14,8 +14,7 @@ export const SearchContext = createContext<ISearchContext>({
 export const SearchState = ({ children }: { children: React.ReactNode }) => {
   const [results, setResults] = useState<Array<FlickrSearchItem>>([]);
 
-  const addResults = (items: Array<FlickrSearchItem>) =>
-    setResults((results) => [...results, ...items]);
+  const addResults = (items: Array<FlickrSearchItem>) => setResults(items);
 
   return (
     <SearchContext.Provider value={{ results, addResults }}>{children}</SearchContext.Provider>

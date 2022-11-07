@@ -6,7 +6,7 @@ import { Modal } from 'components/Modal/Modal';
 import { SearchBar } from 'components/SearchBar/SearchBar';
 import { SearchContext } from 'context/SearchContext';
 
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import './MainPage.css';
 
 export function MainPage() {
@@ -18,7 +18,8 @@ export function MainPage() {
   const [modalContent, setModalContent] = useState<FlickrSearchItem | null>(null);
 
   const searchBarCallback = (searchResult: Array<FlickrSearchItem>) => {
-    setSearchResults((searchResults) => [...searchResults, ...searchResult]);
+    addResults([...results, ...searchResult]);
+    setSearchResults([...searchResults, ...searchResult]);
   };
 
   const ajaxAnimationCallback = (status: boolean) => {
@@ -35,6 +36,10 @@ export function MainPage() {
       setModalContent(searchResults[index]);
     }
   };
+
+  useEffect(() => {
+    setSearchResults(results);
+  }, []);
 
   return (
     <>

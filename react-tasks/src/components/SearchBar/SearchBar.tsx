@@ -48,6 +48,7 @@ export function SearchBar({ searchCallBack, ajaxAnimationCallback }: SearchBarPr
         placeholder="Search..."
         defaultValue={localValue}
         onKeyUp={(e: React.KeyboardEvent) => handleKeyUp(e)}
+        onChange={saveLastValue}
       />
     </div>
   );
