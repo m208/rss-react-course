@@ -32,15 +32,9 @@ const reducer = (state: MainPageState, action: ReducerAction) => {
   const { type, payload } = action;
   switch (type) {
     case 'spinnerActive':
-      return {
-        ...state,
-        value: (state.spinnerActive = payload),
-      };
+      return { ...state, spinnerActive: payload };
     case 'modalActive':
-      return {
-        ...state,
-        value: (state.modalActive = payload),
-      };
+      return { ...state, modalActive: payload };
     default:
       return state;
   }
