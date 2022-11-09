@@ -1,9 +1,10 @@
 import Card from 'components/Card/Card';
-import { FormsContext } from 'context/FormsContext';
-import React, { ChangeEvent, useContext, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, useRef, useState } from 'react';
 import { FieldValues, useForm } from 'react-hook-form';
 import './FormsPage.css';
 import { NotificationPopUp } from './NotificationPopUp/NotificationPopUp';
+import { formsSlice } from 'store/reducers/FormsSlice';
+import { useAppDispatch, useAppSelector } from 'hooks/redux';
 
 export interface IFormData {
   name: string;
@@ -18,7 +19,9 @@ export interface IFormData {
 }
 
 export function FormsPage() {
-  const { forms, addForms } = useContext(FormsContext);
+  const { forms } = useAppSelector((state) => state.formsReducer);
+  const { addForms } = formsSlice.actions;
+  const dispatch = useAppDispatch();
 
   const {
     register,
@@ -29,7 +32,6 @@ export function FormsPage() {
 
   const [submitActive, setsubmitActive] = useState(false);
   const [popupActive, setpopupActive] = useState(false);
-  const [cards, setCards] = useState<Array<IFormData>>([]);
 
   const imageData = useRef<string>('');
 
@@ -46,8 +48,7 @@ export function FormsPage() {
       fileData: imageData.current,
     };
 
-    addForms([...forms, card]);
-    setCards((cards) => [...cards, card]);
+    dispatch(addForms([card]));
 
     drawPopUp();
     reset();
@@ -78,10 +79,6 @@ export function FormsPage() {
   const onValidationInputChange = () => {
     setsubmitActive(true);
   };
-
-  useEffect(() => {
-    setCards(forms);
-  }, []);
 
   return (
     <>
@@ -206,7 +203,7 @@ export function FormsPage() {
       {popupActive && <NotificationPopUp message="Success! Information has been saved!" />}
 
       <div className="cards-wrapper">
-        {cards.map((el, i) => (
+        {forms.map((el, i) => (
           <Card
             imgSrc={el.fileData}
             date={el.date}
