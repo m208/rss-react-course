@@ -7,7 +7,7 @@ import { SearchBar } from 'components/SearchBar/SearchBar';
 
 import { useAppDispatch, useAppSelector } from 'hooks/redux';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { searchSlice } from 'store/reducers/SearchSlice';
 import './MainPage.css';
 
@@ -36,10 +36,6 @@ export function MainPage() {
       dispatch(setModalContent(searchResults[index]));
     }
   };
-
-  useEffect(() => {
-    dispatch(setCards(searchResults));
-  }, []);
 
   return (
     <>
