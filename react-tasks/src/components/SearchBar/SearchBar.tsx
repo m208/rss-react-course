@@ -1,14 +1,11 @@
-import { getRandomSearchPhoto, photosSearch } from 'api/flickr';
-import { FlickrSearchItem } from 'api/types';
 import React, { useEffect, useRef, useState } from 'react';
 import './SearchBar.css';
 
 interface SearchBarProps {
-  searchCallBack: (searchResult: Array<FlickrSearchItem>) => void;
-  ajaxAnimationCallback: (status: boolean) => void;
+  searchCallBack: (text: string) => void;
 }
 
-export function SearchBar({ searchCallBack, ajaxAnimationCallback }: SearchBarProps) {
+export function SearchBar({ searchCallBack }: SearchBarProps) {
   const searchInput = useRef<HTMLInputElement>(null);
   const [localValue, setLocalValue] = useState('');
 
@@ -27,15 +24,9 @@ export function SearchBar({ searchCallBack, ajaxAnimationCallback }: SearchBarPr
 
   const handleKeyUp = async (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
-      ajaxAnimationCallback(true);
-
       if (searchInput.current) {
-        // const search = await getRandomSearchPhoto(searchInput.current.value);
-        const search = await photosSearch(searchInput.current.value);
-        searchCallBack(search.photos.photo);
+        searchCallBack(searchInput.current.value);
       }
-
-      ajaxAnimationCallback(false);
     }
   };
 

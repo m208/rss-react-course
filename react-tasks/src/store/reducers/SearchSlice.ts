@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { FlickrSearchItem } from 'api/types';
+import { fetchPhotos } from './FetchDataThunk';
 
 interface SearchState {
   spinnerActive: boolean;
@@ -19,20 +20,26 @@ export const searchSlice = createSlice({
   name: 'search',
   initialState,
   reducers: {
-    toggleSpinner(state, action: PayloadAction<boolean>) {
-      state.spinnerActive = action.payload;
-    },
-
     toggleModal(state, action: PayloadAction<boolean>) {
       state.modalActive = action.payload;
     },
 
-    setCards(state, action: PayloadAction<Array<FlickrSearchItem>>) {
-      state.searchResults = [...state.searchResults, ...action.payload];
-    },
-
     setModalContent(state, action: PayloadAction<FlickrSearchItem | null>) {
       state.modalContent = action.payload;
+    },
+  },
+
+  extraReducers: {
+    [fetchPhotos.fulfilled.type]: (state, action: PayloadAction<Array<FlickrSearchItem>>) => {
+      state.spinnerActive = false;
+      state.searchResults = [...state.searchResults, ...action.payload];
+    },
+    [fetchPhotos.pending.type]: (state) => {
+      state.spinnerActive = true;
+    },
+    [fetchPhotos.rejected.type]: (state, action: PayloadAction<string>) => {
+      state.spinnerActive = false;
+      console.error(action.payload);
     },
   },
 });

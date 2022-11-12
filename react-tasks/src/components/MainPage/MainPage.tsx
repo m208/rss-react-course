@@ -1,5 +1,4 @@
 import { generateImageUrl, generatePostDate } from 'api/flickr';
-import { FlickrSearchItem } from 'api/types';
 import Card from 'components/Card/Card';
 import { Loader } from 'components/Loader/Loader';
 import { Modal } from 'components/Modal/Modal';
@@ -8,6 +7,7 @@ import { SearchBar } from 'components/SearchBar/SearchBar';
 import { useAppDispatch, useAppSelector } from 'hooks/redux';
 
 import React from 'react';
+import { fetchPhotos } from 'store/reducers/FetchDataThunk';
 import { searchSlice } from 'store/reducers/SearchSlice';
 import './MainPage.css';
 
@@ -15,15 +15,12 @@ export function MainPage() {
   const { spinnerActive, modalActive, modalContent, searchResults } = useAppSelector(
     (state) => state.searchReducer
   );
-  const { toggleSpinner, toggleModal, setCards, setModalContent } = searchSlice.actions;
+  const { toggleModal, setModalContent } = searchSlice.actions;
+
   const dispatch = useAppDispatch();
 
-  const searchBarCallback = (searchResult: Array<FlickrSearchItem>) => {
-    dispatch(setCards(searchResult));
-  };
-
-  const ajaxAnimationCallback = (status: boolean) => {
-    dispatch(toggleSpinner(status));
+  const searchBarCallback = (text: string) => {
+    dispatch(fetchPhotos(text));
   };
 
   const modalShowCallback = (status: boolean) => {
@@ -44,10 +41,7 @@ export function MainPage() {
 
         {modalActive && <Modal content={modalContent} onCloseCallback={modalShowCallback} />}
 
-        <SearchBar
-          searchCallBack={searchBarCallback}
-          ajaxAnimationCallback={ajaxAnimationCallback}
-        />
+        <SearchBar searchCallBack={searchBarCallback} />
 
         <div className="cards-wrapper">
           {searchResults.map((el, index) => (
